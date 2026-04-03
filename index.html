@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script referrerPolicy="no-referrer-when-downgrade" src="https://dev.visualwebsiteoptimizer.com/tag/1209051.js" id="vwoCode"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SPA Shadow DOM + Iframe Demo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <!-- Navigation -->
+  <nav class="bg-white shadow p-4 flex gap-4">
+    <button onclick="navigate('home')" class="px-4 py-2 bg-blue-500 text-white rounded">Home</button>
+    <button onclick="navigate('shadow')" class="px-4 py-2 bg-green-500 text-white rounded">Shadow DOM</button>
+    <button onclick="navigate('iframe')" class="px-4 py-2 bg-purple-500 text-white rounded">iFrame</button>
+  </nav>
+
+  <!-- App Root -->
+  <div id="app" class="p-6"></div>
+
+  <script>
+    const app = document.getElementById('app');
+
+    function navigate(route) {
+      if (route === 'home') {
+        app.innerHTML = `
+          <div class="bg-white p-6 rounded-2xl shadow">
+            <h1 class="text-xl font-bold">Welcome</h1>
+            <p>This is a simple SPA demo with Shadow DOM and iFrame.</p>
+          </div>
+        `;
+      }
+
+      if (route === 'shadow') {
+        app.innerHTML = `<div id="shadow-host"></div>`;
+
+        const host = document.getElementById('shadow-host');
+        const shadow = host.attachShadow({ mode: 'open' });
+
+        shadow.innerHTML = `
+          <style>
+            .card {
+              padding: 20px;
+              background: #1e293b;
+              color: white;
+              border-radius: 12px;
+              box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            }
+          </style>
+          <div class="card">
+            <h2>Shadow DOM Component</h2>
+            <p>Styles here are isolated from main page.</p>
+          </div>
+        `;
+      }
+
+      if (route === 'iframe') {
+        app.innerHTML = `
+          <div class="bg-white p-4 rounded-2xl shadow">
+            <h2 class="font-bold mb-2">iFrame Example</h2>
+            <iframe 
+              src="https://example.com" 
+              class="w-full h-64 border rounded"
+            ></iframe>
+          </div>
+        `;
+      }
+    }
+
+    // Load default page
+    navigate('home');
+  </script>
+
+</body>
+</html>
