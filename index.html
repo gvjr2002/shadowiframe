@@ -101,6 +101,37 @@ shadow.innerHTML = `
 shadow.getElementById("shadowBtn").addEventListener("click", () =>
   console.log("Shadow button clicked")
 );
+
+
+
+  /* SHADOW DOM ON HOME PAGE */
+const homeHost = document.getElementById("homeShadowHost");
+const homeShadow = homeHost.attachShadow({ mode: "open" });
+
+homeShadow.innerHTML = `
+  <style>
+    .shadowBox{
+      border:2px dashed #666;
+      padding:10px;
+      margin-top:10px;
+      display:block;
+    }
+  </style>
+
+  <div class="shadowBox">
+    <input id="homeShadowInput" placeholder="Focus inside Home Shadow">
+    <button id="homeShadowBtn">Shadow MouseDown</button>
+  </div>
+`;
+
+homeShadow.getElementById("homeShadowInput")
+  .addEventListener("focus", () => console.log("Home Shadow Input Focus"));
+
+homeShadow.getElementById("homeShadowInput")
+  .addEventListener("blur", () => console.log("Home Shadow Input Blur"));
+
+homeShadow.getElementById("homeShadowBtn")
+  .addEventListener("mousedown", () => console.log("Home Shadow MouseDown"));
 </script>
 
 </body>
