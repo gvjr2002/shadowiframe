@@ -1,82 +1,105 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <script referrerpolicy="no-referrer-when-downgrade" src="https://dev.visualwebsiteoptimizer.com/cloud-run-test/final/3000249.js" id="vwoCode"></script>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SPA Shadow DOM + Iframe Demo</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Advanced Event Test Page</title>
+  <style>
+    body { font-family: Arial; margin: 0; }
+    nav { background:#222; padding:15px; color:white; }
+    nav button { margin-right:10px; }
+    .page { display:none; padding:20px; }
+    .active { display:block; }
+    .box { width:200px;height:100px;background:#eee;margin:20px 0;padding:10px }
+    #scrollArea { height:800px;background:linear-gradient(white,lightblue); }
+    iframe { width:100%; height:200px; border:2px solid black; }
+  </style>
 </head>
-<body class="bg-gray-100 font-sans">
 
-  <!-- Navigation (still SPA, but components also visible on load) -->
-  <nav class="bg-white shadow p-4 flex gap-4">
-    <button onclick="navigate('home')" class="px-4 py-2 bg-blue-500 text-white rounded">Home</button>
-    <button onclick="navigate('shadow')" class="px-4 py-2 bg-green-500 text-white rounded">Focus Shadow</button>
-    <button onclick="navigate('iframe')" class="px-4 py-2 bg-purple-500 text-white rounded">Focus iFrame</button>
-  </nav>
+<body>
 
-  <!-- App Root -->
-  <div id="app" class="p-6 space-y-6"></div>
+<nav>
+  SPA Navigation:
+  <button onclick="navigate('home')">Home</button>
+  <button onclick="navigate('form')">Form Page</button>
+  <button onclick="navigate('shadow')">Shadow DOM</button>
+</nav>
 
-  <script>
-    const app = document.getElementById('app');
+<!-- HOME PAGE -->
+<div id="home" class="page active">
+  <h2>Home Page</h2>
 
-    function renderBaseLayout() {
-      app.innerHTML = `
-        <div class="bg-white p-6 rounded-2xl shadow">
-          <h1 class="text-xl font-bold">SPA Demo (Loaded by Default)</h1>
-          <p>Shadow DOM and iFrame are visible on initial load.</p>
-        </div>
+  <button id="clickBtn">Click / MouseDown Test</button>
 
-        <div id="shadow-host"></div>
+  <div id="hoverBox" class="box">Hover over me</div>
 
-        <div class="bg-white p-4 rounded-2xl shadow">
-          <h2 class="font-bold mb-2">iFrame Example</h2>
-          <iframe 
-            src="https://example.com" 
-            class="w-full h-64 border rounded"
-          ></iframe>
-        </div>
-      `;
+  <div id="scrollArea">Scroll Down Area</div>
 
-      // Attach Shadow DOM immediately
-      const host = document.getElementById('shadow-host');
-      const shadow = host.attachShadow({ mode: 'open' });
+  <h3>Iframe Test</h3>
+  <iframe srcdoc='
+      <input id="iframeInput" placeholder="Focus inside iframe">
+      <button onclick="alert(`Clicked inside iframe`)">Click Me</button>
+  '></iframe>
+</div>
 
-      shadow.innerHTML = `
-        <style>
-          .card {
-            padding: 20px;
-            background: #1e293b;
-            color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-          }
-        </style>
-        <div class="card">
-          <h2>Shadow DOM Component</h2>
-          <p>This is loaded on page load (no click needed).</p>
-        </div>
-      `;
-    }
+<!-- FORM PAGE -->
+<div id="form" class="page">
+  <h2>Form Page</h2>
 
-    function navigate(route) {
-      // Re-render base first
-      renderBaseLayout();
+  <form id="testForm">
+    <input id="fullName" placeholder="Full Name"><br><br>
+    <input id="email" placeholder="Email"><br><br>
+    <button type="submit">Submit Form</button>
+  </form>
 
-      if (route === 'shadow') {
-        document.getElementById('shadow-host').scrollIntoView({ behavior: 'smooth' });
-      }
+  <p id="formMsg"></p>
+</div>
 
-      if (route === 'iframe') {
-        document.querySelector('iframe').scrollIntoView({ behavior: 'smooth' });
-      }
-    }
+<!-- SHADOW DOM PAGE -->
+<div id="shadow" class="page">
+  <h2>Shadow DOM Page</h2>
+  <div id="shadowHost"></div>
+</div>
 
-    // Initial load
-    renderBaseLayout();
-  </script>
+<script>
+/* SPA NAVIGATION */
+function navigate(page) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById(page).classList.add("active");
+  history.pushState({}, "", "#"+page);
+}
+
+/* CLICK + MOUSEDOWN */
+document.getElementById("clickBtn").addEventListener("mousedown",()=>console.log("mousedown fired"));
+document.getElementById("clickBtn").addEventListener("click",()=>console.log("click fired"));
+
+/* HOVER */
+document.getElementById("hoverBox").addEventListener("mouseover",()=>console.log("hover fired"));
+
+/* SCROLL */
+window.addEventListener("scroll",()=>console.log("scroll event fired"));
+
+/* FORM SUBMIT */
+document.getElementById("testForm").addEventListener("submit",(e)=>{
+  e.preventDefault();
+  document.getElementById("formMsg").innerText="Form submitted!";
+});
+
+/* FOCUS / BLUR */
+document.addEventListener("focus", e => console.log("Focus:", e.target.id), true);
+document.addEventListener("blur", e => console.log("Blur:", e.target.id), true);
+
+/* SHADOW DOM */
+const host = document.getElementById("shadowHost");
+const shadow = host.attachShadow({ mode: "open" });
+
+shadow.innerHTML = `
+  <input id="shadowInput" placeholder="Shadow DOM Input">
+  <button id="shadowBtn">Shadow Click</button>
+`;
+
+shadow.getElementById("shadowBtn").addEventListener("click", () =>
+  console.log("Shadow button clicked")
+);
+</script>
 
 </body>
 </html>
